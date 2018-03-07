@@ -2906,10 +2906,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6abfde46cf948a4a956974397bcdbaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _spriteAgua: {fileID: 21300000, guid: 5cea7ff7661f4e747883360a3e221ecb, type: 3}
-  _spriteAguaProfunda: {fileID: 21300000, guid: 5a98e9066a7fbbf439c9cb06f1a21b7c,
-    type: 3}
-  _spriteMuro: {fileID: 21300000, guid: 45278655f51884a47a0f1a685b8fa40b, type: 3}
+  spriteAgua: {fileID: 21300000, guid: 5cea7ff7661f4e747883360a3e221ecb, type: 3}
+  spriteAguaProfunda: {fileID: 21300000, guid: 5a98e9066a7fbbf439c9cb06f1a21b7c, type: 3}
+  spriteMuro: {fileID: 21300000, guid: 45278655f51884a47a0f1a685b8fa40b, type: 3}
 --- !u!4 &1433410362
 Transform:
   m_ObjectHideFlags: 0

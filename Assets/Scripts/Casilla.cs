@@ -26,13 +26,27 @@ public class Casilla : MonoBehaviour {
 
     private void OnMouseDown()
     {
-        GameManager.instance.CasillaPulsada(this.gameObject);
+        SpriteRenderer render = GetComponent<SpriteRenderer>();
 
+        switch (_tile)
+        {
+            case GameManager.Tile.agua:
+                _tile = GameManager.Tile.aguaProfunda;
+                render.sprite = GameManager.instance.spriteAguaProfunda;
+
+                break;
+
+            case GameManager.Tile.aguaProfunda:
+                _tile = GameManager.Tile.muro;
+                render.sprite = GameManager.instance.spriteMuro;
+                break;
+
+            case GameManager.Tile.muro:
+                _tile = GameManager.Tile.agua;
+                render.sprite = GameManager.instance.spriteAgua;
+                break;
+
+
+        }
     }
-
-
-    //GETTERS
-    public GameManager.Tile GetTile() { return _tile; }
-
-    public void SetTile(GameManager.Tile tile) { _tile = tile; }
 }
