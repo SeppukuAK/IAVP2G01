@@ -8,12 +8,21 @@ public class GameManager : MonoBehaviour {
 
     public enum Tile { agua,aguaProfunda,muro};
 
-    //Origen
-    public struct Pos
-    {
-        public int x;
-        public int y;
-    }
+
+	public enum Seleccion {rojo,azul,verde, vacio};
+
+	public enum ColorBarco{rojo,azul,verde};
+
+	//Origen
+	public struct Pos
+	{
+		public int x;
+		public int y;
+	}
+
+
+
+	Seleccion seleccionado;
 
     Tile[,] _tablero;
 
@@ -23,9 +32,20 @@ public class GameManager : MonoBehaviour {
     public Sprite _spriteAguaProfunda;
     public Sprite _spriteMuro;
 
+	public Sprite _spriteBarcoAzul;
+	public Sprite _spriteBarcoAzulSeleccionado;
+
+	public Sprite _spriteBarcoRojo;
+	public Sprite _spriteBarcoRojoSeleccionado;
+
+	public Sprite _spriteBarcoVerde;
+	public Sprite _spriteBarcoVerdeSeleccionado;
+
     // Use this for initialization
     void Start () {
         instance = this;
+		seleccionado = Seleccion.vacio;
+
 
         _tablero = new Tile[10, 10];
 
@@ -53,6 +73,13 @@ public class GameManager : MonoBehaviour {
 
         colocaTablero();
 
+		Pos posAux;
+		posAux.x = posAux.y = 0;
+
+		GameObject barcoAzul = new GameObject("BarcoAzul");
+
+		Barco azulComp = barcoAzul.AddComponent<Barco>();
+		azulComp.ConstruyeBarco (posAux, _spriteBarcoAzul, _spriteBarcoAzulSeleccionado, ColorBarco.azul);
 	}
 	
     //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
@@ -118,37 +145,66 @@ public class GameManager : MonoBehaviour {
 
         }
 
+		Destroy (agua);Destroy (aguaProfunda);Destroy (muro);
     }
 
     public void CasillaPulsada(GameObject go)
     {
-        Casilla casilla = go.GetComponent<Casilla>();
-        SpriteRenderer render = go.GetComponent<SpriteRenderer>();
+		if (seleccionado == Seleccion.vacio) {
+			Casilla casilla = go.GetComponent<Casilla> ();
+			SpriteRenderer render = go.GetComponent<SpriteRenderer> ();
 
 
-        switch (casilla.GetTile())
-        {
-            case Tile.agua:
-                casilla.SetTile(Tile.aguaProfunda);
-                render.sprite = _spriteAguaProfunda;
+			switch (casilla.GetTile ()) {
+			case Tile.agua:
+				casilla.SetTile (Tile.aguaProfunda);
+				render.sprite = _spriteAguaProfunda;
 
-                break;
+				break;
 
-            case Tile.aguaProfunda:
-                casilla.SetTile(Tile.muro);
-                render.sprite = _spriteMuro;
-                break;
+			case Tile.aguaProfunda:
+				casilla.SetTile (Tile.muro);
+				render.sprite = _spriteMuro;
+				break;
 
-            case Tile.muro:
-                casilla.SetTile(Tile.agua);
-                render.sprite = _spriteAgua;
-                break;
+			case Tile.muro:
+				casilla.SetTile (Tile.agua);
+				render.sprite = _spriteAgua;
+				break;
 
 
-        }
+			}
+		} 
 
+		//Mover barquito
+		else 
+		{
+			
+		}
 
     }
+
+	public Seleccion getSeleccionado(){return seleccionado;}
+
+
+	public void SetSeleccionado(ColorBarco colBarco){
+		switch(colBarco){
+
+		case ColorBarco.azul:
+			seleccionado = Seleccion.azul;
+			break;
+
+		case ColorBarco.rojo:
+			seleccionado = Seleccion.rojo;
+			break;
+
+		case ColorBarco.verde:
+			seleccionado = Seleccion.verde;
+			break;
+
+		}
+	}
+		
 
 	// Update is called once per frame
 	void Update () {
