@@ -1,0 +1,17 @@
+
+----------Estrategias de búsqueda informada----------
+
+
+-Cuando tenemos información de la solución: utilizamos un resultor basado en objetivos:
+	-Los no informados, conocen la prueba de objetivo
+	-Los informados distinguen configuraciones más cercanas a la solución
+
+
+//------BUSQUEDA INFORMADA-------
+
+-También llamadas estrategias heurísticas
+
+-Usan información adicional que les permiten saber más sobre la solución:
+	-Que nodo es más prometedos
+	-Que configuración es más cercana al objetivo
+
