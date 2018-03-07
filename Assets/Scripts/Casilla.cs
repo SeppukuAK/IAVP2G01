@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class Casilla : MonoBehaviour {
 
     GameManager.Tile _tile;
@@ -17,9 +18,21 @@ public class Casilla : MonoBehaviour {
 		
 	}
 
+    public void ConstruyeCasilla(GameManager.Tile tile, GameManager.Pos pos)
+    {
+        _tile = tile;
+        _pos = pos;
+    }
+
     private void OnMouseDown()
     {
         GameManager.instance.CasillaPulsada(this.gameObject);
 
     }
+
+
+    //GETTERS
+    public GameManager.Tile GetTile() { return _tile; }
+
+    public void SetTile(GameManager.Tile tile) { _tile = tile; }
 }

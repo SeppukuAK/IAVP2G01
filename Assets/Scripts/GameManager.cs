@@ -11,17 +11,17 @@ public class GameManager : MonoBehaviour {
     //Origen
     public struct Pos
     {
-        int x;
-        int y;
+        public int x;
+        public int y;
     }
 
     Tile[,] _tablero;
 
     const float _distancia = 0.64f;
 
-    public GameObject _agua;
-    public GameObject _aguaProfunda;
-    public GameObject _muro;
+    public Sprite _spriteAgua;
+    public Sprite _spriteAguaProfunda;
+    public Sprite _spriteMuro;
 
     // Use this for initialization
     void Start () {
@@ -60,22 +60,55 @@ public class GameManager : MonoBehaviour {
     {
         GameObject tableroContenedor = GameObject.FindWithTag("Tablero");
 
-        for(int i = 0; i < 10; i++)
+        //Creamos los prefabs de cada tile
+
+        //Agua
+        GameObject agua = new GameObject("Agua");
+        SpriteRenderer renderAgua = agua.AddComponent<SpriteRenderer>();
+        renderAgua.sprite = _spriteAgua;
+        agua.AddComponent<Casilla>();
+        agua.AddComponent<BoxCollider2D>();
+
+        //Agua profunda
+        GameObject aguaProfunda = new GameObject("AguaProfunda");
+        SpriteRenderer renderAguaProfunda = aguaProfunda.AddComponent<SpriteRenderer>();
+        renderAguaProfunda.sprite = _spriteAguaProfunda;
+        aguaProfunda.AddComponent<Casilla>();
+        aguaProfunda.AddComponent<BoxCollider2D>();
+
+        //Muro
+        GameObject muro = new GameObject("Muro");
+        SpriteRenderer renderMuro = muro.AddComponent<SpriteRenderer>();
+        renderMuro.sprite = _spriteMuro;
+        muro.AddComponent<Casilla>();
+        muro.AddComponent<BoxCollider2D>();
+
+
+        for (int i = 0; i < 10; i++)
         {
             for(int j = 0; j < 10; j++)
             {
+                Pos posAux;
+                posAux.x = j;
+                posAux.y = i;
+
                 switch (_tablero[i, j])
                 {
                     case Tile.agua:
-                        Instantiate(_agua, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        GameObject aguaAux = Instantiate(agua, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        aguaAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.agua, posAux);
                         break;
 
                     case Tile.aguaProfunda:
-                        Instantiate(_aguaProfunda, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        GameObject aguaProfundaAux = Instantiate(aguaProfunda, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.aguaProfunda, posAux);
+
                         break;
 
                     case Tile.muro:
-                        Instantiate(_muro, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        GameObject muroAux =  Instantiate(muro, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
+                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.muro, posAux);
+
                         break;
 
 
@@ -89,7 +122,31 @@ public class GameManager : MonoBehaviour {
 
     public void CasillaPulsada(GameObject go)
     {
-        go.transform.position
+        Casilla casilla = go.GetComponent<Casilla>();
+        SpriteRenderer render = go.GetComponent<SpriteRenderer>();
+
+
+        switch (casilla.GetTile())
+        {
+            case Tile.agua:
+                casilla.SetTile(Tile.aguaProfunda);
+                render.sprite = _spriteAguaProfunda;
+
+                break;
+
+            case Tile.aguaProfunda:
+                casilla.SetTile(Tile.muro);
+                render.sprite = _spriteMuro;
+                break;
+
+            case Tile.muro:
+                casilla.SetTile(Tile.agua);
+                render.sprite = _spriteAgua;
+                break;
+
+
+        }
+
 
     }
 
