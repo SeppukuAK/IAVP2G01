@@ -2,212 +2,114 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     public static GameManager instance;
 
-    public enum Tile { agua,aguaProfunda,muro};
-
-
-	public enum Seleccion {rojo,azul,verde, vacio};
-
-	public enum ColorBarco{rojo,azul,verde};
-
-	//Origen
-	public struct Pos
-	{
-		public int x;
-		public int y;
-	}
-
-
-
-	Seleccion seleccionado;
-
-    Tile[,] _tablero;
+    Tablero _tablero;
+    TipoBarco _seleccionado;
 
     const float _distancia = 0.64f;
 
-    public Sprite _spriteAgua;
-    public Sprite _spriteAguaProfunda;
-    public Sprite _spriteMuro;
+    //--------ATRIBUTOS--------
 
-	public Sprite _spriteBarcoAzul;
-	public Sprite _spriteBarcoAzulSeleccionado;
+    public GameObject tilePrefab;
+    public GameObject barcoPrefab;
 
-	public Sprite _spriteBarcoRojo;
-	public Sprite _spriteBarcoRojoSeleccionado;
+    public Sprite spriteAgua;
+    public Sprite spriteAguaProfunda;
+    public Sprite spriteMuro;
 
-	public Sprite _spriteBarcoVerde;
-	public Sprite _spriteBarcoVerdeSeleccionado;
+    public Sprite spriteBarcoAzul;
+    public Sprite spriteBarcoAzulSeleccionado;
+
+    public Sprite spriteBarcoRojo;
+    public Sprite spriteBarcoRojoSeleccionado;
+
+    public Sprite spriteBarcoVerde;
+    public Sprite spriteBarcoVerdeSeleccionado;
+
+    //--------ATRIBUTOS--------
+
+
 
     // Use this for initialization
-    void Start () {
+    void Start()
+    {
         instance = this;
-		seleccionado = Seleccion.vacio;
 
-
-        _tablero = new Tile[10, 10];
-
-        //i son filas
-        for(int i = 0; i < 10;i++)
-        {
-            for(int j = 0; j < 10; j++)
-            {
-                int random = UnityEngine.Random.Range(0, 10);
-
-                //Mar
-                if (random <= 7)
-                    _tablero[i, j] = Tile.agua;
-               
-                //Mar profundo
-                else if (random == 8)
-                    _tablero[i, j] = Tile.aguaProfunda;
-
-                //Muro
-                else
-                    _tablero[i, j] = Tile.muro;
-            }
-
-        }
-
+        _tablero = new Tablero();
         colocaTablero();
 
-		Pos posAux;
-		posAux.x = posAux.y = 0;
+        _seleccionado = TipoBarco.ninguno;
+        ConstruyeUnidades();
+    }
 
-		GameObject barcoAzul = new GameObject("BarcoAzul");
+    // Update is called once per frame
+    void Update()
+    {
 
-		Barco azulComp = barcoAzul.AddComponent<Barco>();
-		azulComp.ConstruyeBarco (posAux, _spriteBarcoAzul, _spriteBarcoAzulSeleccionado, ColorBarco.azul);
-	}
-	
+    }
+
+
     //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
     void colocaTablero()
     {
-        GameObject tableroContenedor = GameObject.FindWithTag("Tablero");
+        GameObject GOTablero = new GameObject("Tablero");
 
-        //Creamos los prefabs de cada tile
-
-        //Agua
-        GameObject agua = new GameObject("Agua");
-        SpriteRenderer renderAgua = agua.AddComponent<SpriteRenderer>();
-        renderAgua.sprite = _spriteAgua;
-        agua.AddComponent<Casilla>();
-        agua.AddComponent<BoxCollider2D>();
-
-        //Agua profunda
-        GameObject aguaProfunda = new GameObject("AguaProfunda");
-        SpriteRenderer renderAguaProfunda = aguaProfunda.AddComponent<SpriteRenderer>();
-        renderAguaProfunda.sprite = _spriteAguaProfunda;
-        aguaProfunda.AddComponent<Casilla>();
-        aguaProfunda.AddComponent<BoxCollider2D>();
-
-        //Muro
-        GameObject muro = new GameObject("Muro");
-        SpriteRenderer renderMuro = muro.AddComponent<SpriteRenderer>();
-        renderMuro.sprite = _spriteMuro;
-        muro.AddComponent<Casilla>();
-        muro.AddComponent<BoxCollider2D>();
-
-
-        for (int i = 0; i < 10; i++)
+        for (int y = 0; y < 10; y++)
         {
-            for(int j = 0; j < 10; j++)
+            for (int x = 0; x < 10; x++)
             {
-                Pos posAux;
-                posAux.x = j;
-                posAux.y = i;
+                //Creamos gameObject
+                GameObject GOTileAux = Instantiate(tilePrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
 
-                switch (_tablero[i, j])
+                Tile tileAux = _tablero.GetTile(x, y);
+
+                //SpriteRenderer
+                switch (tileAux.GetTerreno())
                 {
-                    case Tile.agua:
-                        GameObject aguaAux = Instantiate(agua, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.agua, posAux);
+                    case Terreno.agua:
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteAgua;
                         break;
 
-                    case Tile.aguaProfunda:
-                        GameObject aguaProfundaAux = Instantiate(aguaProfunda, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.aguaProfunda, posAux);
-
+                    case Terreno.aguaProfunda:
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteAguaProfunda;
                         break;
 
-                    case Tile.muro:
-                        GameObject muroAux =  Instantiate(muro, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(Tile.muro, posAux);
-
+                    case Terreno.muro:
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteMuro;
                         break;
-
-
                 }
 
+                //Casilla
+                GOTileAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
             }
 
         }
 
-		Destroy (agua);Destroy (aguaProfunda);Destroy (muro);
     }
 
-    public void CasillaPulsada(GameObject go)
+    void ConstruyeUnidades()
     {
-		if (seleccionado == Seleccion.vacio) {
-			Casilla casilla = go.GetComponent<Casilla> ();
-			SpriteRenderer render = go.GetComponent<SpriteRenderer> ();
+        //Azul
+        Pos posAzul = new Pos(0, 0);
+        GameObject barcoAzul = Instantiate(barcoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        barcoAzul.name = "BarcoAzul";
 
 
-			switch (casilla.GetTile ()) {
-			case Tile.agua:
-				casilla.SetTile (Tile.aguaProfunda);
-				render.sprite = _spriteAguaProfunda;
+        LogicaBarco logicaBarcoAzul = new LogicaBarco(TipoBarco.azul, posAzul);
 
-				break;
-
-			case Tile.aguaProfunda:
-				casilla.SetTile (Tile.muro);
-				render.sprite = _spriteMuro;
-				break;
-
-			case Tile.muro:
-				casilla.SetTile (Tile.agua);
-				render.sprite = _spriteAgua;
-				break;
-
-
-			}
-		} 
-
-		//Mover barquito
-		else 
-		{
-			
-		}
-
+        barcoAzul.GetComponent<Barco>().ConstruyeBarco(logicaBarcoAzul,spriteBarcoAzul,spriteBarcoAzulSeleccionado);
     }
 
-	public Seleccion getSeleccionado(){return seleccionado;}
 
 
-	public void SetSeleccionado(ColorBarco colBarco){
-		switch(colBarco){
+    public TipoBarco GetSeleccionado() { return _seleccionado; }
 
-		case ColorBarco.azul:
-			seleccionado = Seleccion.azul;
-			break;
-
-		case ColorBarco.rojo:
-			seleccionado = Seleccion.rojo;
-			break;
-
-		case ColorBarco.verde:
-			seleccionado = Seleccion.verde;
-			break;
-
-		}
-	}
-		
-
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public void SetSeleccionado(TipoBarco colBarco)
+    {
+        _seleccionado = colBarco;
+    }
 }

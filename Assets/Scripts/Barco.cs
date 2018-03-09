@@ -2,51 +2,36 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class Barco : MonoBehaviour {
 
-	GameManager.Pos _pos;
-	GameManager.ColorBarco _colorBarco;
-	Sprite _spriteBarco, _spriteBarcoSeleccionado;
+    LogicaBarco _logicaBarco;
 
-	// Use this for initialization
-	void Start () {
+    Sprite _spriteBarco;
+    Sprite _spriteBarcoSeleccionado;
 
-	}
+    // Use this for initialization
+    void Start()
+    {
+    }
 
-	// Update is called once per frame
-	void Update () {
+    public void ConstruyeBarco(LogicaBarco logicaBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado)
+    {
+        _logicaBarco = logicaBarco;
+        _spriteBarco = spriteBarco;
+        _spriteBarcoSeleccionado = spriteBarcoSeleccionado;
 
-	}
+       GetComponent<SpriteRenderer>().sprite = _spriteBarco;
+    }
 
-	public void ConstruyeBarco(GameManager.Pos pos, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, GameManager.ColorBarco colorbarco)
-	{
+    private void OnMouseDown()
+    {
+        if (GameManager.instance.GetSeleccionado() == TipoBarco.ninguno)
+        {
+            SpriteRenderer render = GetComponent<SpriteRenderer>();
+            render.sprite = _spriteBarcoSeleccionado;
 
-		_pos = pos;
-		_spriteBarco = spriteBarco;
-		_spriteBarcoSeleccionado = spriteBarcoSeleccionado;
-		_colorBarco = colorbarco;
+            GameManager.instance.SetSeleccionado(_logicaBarco.GetTipoBarco());
+        }
 
-		SpriteRenderer renderer = gameObject.AddComponent<SpriteRenderer>();
-		renderer.sprite = _spriteBarco;
-		renderer.sortingOrder = 1;
-		gameObject.AddComponent<BoxCollider2D>();
-
-	}
-
-	private void OnMouseDown()
-	{
-		//Caso en el que no hay nada seleccionado
-		if (GameManager.instance.getSeleccionado () == GameManager.Seleccion.vacio) {
-			
-			SpriteRenderer render = GetComponent<SpriteRenderer> ();
-
-			render.sprite = _spriteBarcoSeleccionado;
-
-			GameManager.instance.SetSeleccionado (_colorBarco);
-		}
-
-	}
-				
-
+    }
 }

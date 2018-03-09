@@ -5,37 +5,39 @@ using UnityEngine;
 
 public class Casilla : MonoBehaviour {
 
-    GameManager.Tile _tile;
-    GameManager.Pos _pos;
-
+    Tile _tile;
 
 	// Use this for initialization
 	void Start () {
-
 	}
 	
-	// Update is called once per frame
-	void Update () {
-		
-	}
-
-    public void ConstruyeCasilla(GameManager.Tile tile, GameManager.Pos pos)
+    public void ConstruyeCasilla(Tile tile)
     {
         _tile = tile;
-        _pos = pos;
     }
 
     private void OnMouseDown()
     {
+        SpriteRenderer render = GetComponent<SpriteRenderer>();
 
-		GameManager.instance.CasillaPulsada (this.gameObject);
+        switch (_tile.GetTerreno())
+        {
+            case Terreno.agua:
+                _tile.SetTerreno(Terreno.aguaProfunda);
+                render.sprite = GameManager.instance.spriteAguaProfunda;
 
+                break;
 
+            case Terreno.aguaProfunda:
+                _tile.SetTerreno(Terreno.muro);
+                render.sprite = GameManager.instance.spriteMuro;
+                break;
+
+            case Terreno.muro:
+                _tile.SetTerreno(Terreno.agua);
+                render.sprite = GameManager.instance.spriteAgua;
+                break;
+
+        }
     }
-
-
-    //GETTERS
-    public GameManager.Tile GetTile() { return _tile; }
-
-    public void SetTile(GameManager.Tile tile) { _tile = tile; }
 }
