@@ -22,6 +22,9 @@ public class Tile
     }
 
     public Terreno GetTerreno() { return _terreno; }
+    public void SetTerreno(Terreno terreno) { _terreno = terreno; }
+
+    public Pos GetPos() { return _pos; }
 
 }
 

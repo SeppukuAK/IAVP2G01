@@ -12,16 +12,31 @@ public class GameManager : MonoBehaviour {
 
     //--------ATRIBUTOS--------
 
+    public GameObject aguaPrefab;
+    public GameObject aguaProfundaPrefab;
+    public GameObject muroPrefab;
+
+
+    [HideInInspector]
     public Sprite spriteAgua;
+
+    [HideInInspector]
     public Sprite spriteAguaProfunda;
+
+    [HideInInspector]
     public Sprite spriteMuro;
 
     //--------ATRIBUTOS--------
+
+
 
     // Use this for initialization
     void Start ()
     {
         instance = this;
+
+        InicializaSprites();
+
         _tablero = new Tablero();
         colocaTablero();
 	}  
@@ -31,62 +46,46 @@ public class GameManager : MonoBehaviour {
 		
 	}
 
+    void InicializaSprites()
+    {
+        spriteAgua = aguaPrefab.GetComponent<SpriteRenderer>().sprite;
+        spriteAguaProfunda = aguaProfundaPrefab.GetComponent<SpriteRenderer>().sprite;
+        spriteMuro = muroPrefab.GetComponent<SpriteRenderer>().sprite;
+
+    }
+
 
     //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
     void colocaTablero()
     {
-        GameObject tableroContenedor = GameObject.FindWithTag("Tablero");
-
-        //Creamos los prefabs de cada tile
-
-        //Agua
-        GameObject agua = new GameObject("Agua");
-        SpriteRenderer renderAgua = agua.AddComponent<SpriteRenderer>();
-        renderAgua.sprite = spriteAgua;
-        agua.AddComponent<Casilla>();
-        agua.AddComponent<BoxCollider2D>();
-
-        //Agua profunda
-        GameObject aguaProfunda = new GameObject("AguaProfunda");
-        SpriteRenderer renderAguaProfunda = aguaProfunda.AddComponent<SpriteRenderer>();
-        renderAguaProfunda.sprite = spriteAguaProfunda;
-        aguaProfunda.AddComponent<Casilla>();
-        aguaProfunda.AddComponent<BoxCollider2D>();
-
-        //Muro
-        GameObject muro = new GameObject("Muro");
-        SpriteRenderer renderMuro = muro.AddComponent<SpriteRenderer>();
-        renderMuro.sprite = spriteMuro;
-        muro.AddComponent<Casilla>();
-        muro.AddComponent<BoxCollider2D>();
-
+        GameObject GOTablero = new GameObject("Tablero");
 
         for (int y = 0; y < 10; y++)
         {
             for (int x = 0; x < 10; x++)
             {
                 Pos posAux = new Pos(x,y);
+                Tile tileAux = _tablero.GetTile(x, y);
 
-                switch (_tablero.GetTile(x,y).GetTerreno())
+                switch (tileAux.GetTerreno())
                 {
                     case Terreno.agua:
-                        GameObject aguaAux = GameManager.Instantiate(agua, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaAux.GetComponent<Casilla>().ConstruyeCasilla(Terreno.agua, posAux);
+                        GameObject aguaAux = Instantiate(aguaPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
+
+                        aguaAux.AddComponent<Casilla>().ConstruyeCasilla(tileAux);
                         break;
 
                     case Terreno.aguaProfunda:
-                        GameObject aguaProfundaAux = GameManager.Instantiate(aguaProfunda, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(Terreno.aguaProfunda, posAux);
+                        GameObject aguaProfundaAux = Instantiate(aguaProfundaPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
+                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
 
                         break;
 
                     case Terreno.muro:
-                        GameObject muroAux = GameManager.Instantiate(muro, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(Terreno.muro, posAux);
+                        GameObject muroAux = Instantiate(muroPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
+                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
 
                         break;
-
-
                 }
 
             }
