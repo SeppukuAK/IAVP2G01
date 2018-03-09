@@ -1,106 +1,40 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
-using UnityEngine;
+using System.Linq;
+using System.Text;
 
-public class Tablero : MonoBehaviour {
+public class Tablero {
 
-    GameManager.Tile [,] _tablero;
+    Tile [,] _matriz;
 
-    const float _distancia = 0.64f;
-
-    void Start()
+    public Tablero()
     {
-        _tablero = new GameManager.Tile[10, 10];
+        _matriz = new Tile[10, 10];
+        Random rnd = new Random();
 
         //i son filas
-        for (int i = 0; i < 10; i++)
+        for (int y = 0; y < 10; y++)
         {
-            for (int j = 0; j < 10; j++)
+            for (int x = 0; x < 10; x++)
             {
-                int random = UnityEngine.Random.Range(0, 10);
-
+                int random = rnd.Next(0, 10);
                 //Mar
                 if (random <= 7)
-                    _tablero[i, j] = GameManager.Tile.agua;
+                    _matriz[y, x] = new Tile(Terreno.agua,new Pos(x,y));
 
                 //Mar profundo
                 else if (random == 8)
-                    _tablero[i, j] = GameManager.Tile.aguaProfunda;
+                    _matriz[y, x] = new Tile(Terreno.aguaProfunda, new Pos(x, y));
 
                 //Muro
                 else
-                    _tablero[i, j] = GameManager.Tile.muro;
-            }
-
-        }
-
-        colocaTablero();
-
-    }
-
-
-    //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
-    void colocaTablero()
-    {
-        GameObject tableroContenedor = GameObject.FindWithTag("Tablero");
-
-        //Creamos los prefabs de cada tile
-
-        //Agua
-        GameObject agua = new GameObject("Agua");
-        SpriteRenderer renderAgua = agua.AddComponent<SpriteRenderer>();
-        renderAgua.sprite = GameManager.instance.spriteAgua;
-        agua.AddComponent<Casilla>();
-        agua.AddComponent<BoxCollider2D>();
-
-        //Agua profunda
-        GameObject aguaProfunda = new GameObject("AguaProfunda");
-        SpriteRenderer renderAguaProfunda = aguaProfunda.AddComponent<SpriteRenderer>();
-        renderAguaProfunda.sprite = GameManager.instance.spriteAguaProfunda;
-        aguaProfunda.AddComponent<Casilla>();
-        aguaProfunda.AddComponent<BoxCollider2D>();
-
-        //Muro
-        GameObject muro = new GameObject("Muro");
-        SpriteRenderer renderMuro = muro.AddComponent<SpriteRenderer>();
-        renderMuro.sprite = GameManager.instance.spriteMuro;
-        muro.AddComponent<Casilla>();
-        muro.AddComponent<BoxCollider2D>();
-
-
-        for (int i = 0; i < 10; i++)
-        {
-            for (int j = 0; j < 10; j++)
-            {
-                GameManager.Pos posAux;
-                posAux.x = j;
-                posAux.y = i;
-
-                switch (_tablero[i, j])
-                {
-                    case GameManager.Tile.agua:
-                        GameObject aguaAux = Instantiate(agua, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaAux.GetComponent<Casilla>().ConstruyeCasilla(GameManager.Tile.agua, posAux);
-                        break;
-
-                    case GameManager.Tile.aguaProfunda:
-                        GameObject aguaProfundaAux = Instantiate(aguaProfunda, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(GameManager.Tile.aguaProfunda, posAux);
-
-                        break;
-
-                    case GameManager.Tile.muro:
-                        GameObject muroAux = Instantiate(muro, new Vector3(j * _distancia, -i * _distancia, 0), Quaternion.identity, tableroContenedor.transform);
-                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(GameManager.Tile.muro, posAux);
-
-                        break;
-
-
-                }
-
+                    _matriz[y, x] = new Tile(Terreno.muro, new Pos(x, y));
             }
 
         }
 
     }
+
+    public Tile GetTile(int x, int y) { return _matriz[y,x]; }
+
 }

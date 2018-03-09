@@ -5,8 +5,8 @@ using UnityEngine;
 
 public class Casilla : MonoBehaviour {
 
-    GameManager.Tile _tile;
-    GameManager.Pos _pos;
+    Tile _tile;
+    Pos _pos;
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +18,7 @@ public class Casilla : MonoBehaviour {
 		
 	}
 
-    public void ConstruyeCasilla(GameManager.Tile tile, GameManager.Pos pos)
+    public void ConstruyeCasilla(Tile tile, Pos pos)
     {
         _tile = tile;
         _pos = pos;
@@ -30,19 +30,19 @@ public class Casilla : MonoBehaviour {
 
         switch (_tile)
         {
-            case GameManager.Tile.agua:
-                _tile = GameManager.Tile.aguaProfunda;
+            case Tile.agua:
+                _tile = Tile.aguaProfunda;
                 render.sprite = GameManager.instance.spriteAguaProfunda;
 
                 break;
 
-            case GameManager.Tile.aguaProfunda:
-                _tile = GameManager.Tile.muro;
+            case Tile.aguaProfunda:
+                _tile = Tile.muro;
                 render.sprite = GameManager.instance.spriteMuro;
                 break;
 
-            case GameManager.Tile.muro:
-                _tile = GameManager.Tile.agua;
+            case Tile.muro:
+                _tile = Tile.agua;
                 render.sprite = GameManager.instance.spriteAgua;
                 break;
 
