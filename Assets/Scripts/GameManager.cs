@@ -2,55 +2,53 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour {
+public class GameManager : MonoBehaviour
+{
 
     public static GameManager instance;
 
     Tablero _tablero;
+    TipoBarco _seleccionado;
 
     const float _distancia = 0.64f;
 
     //--------ATRIBUTOS--------
 
-    public GameObject aguaPrefab;
-    public GameObject aguaProfundaPrefab;
-    public GameObject muroPrefab;
+    public GameObject tilePrefab;
+    public GameObject barcoPrefab;
 
-
-    [HideInInspector]
     public Sprite spriteAgua;
-
-    [HideInInspector]
     public Sprite spriteAguaProfunda;
-
-    [HideInInspector]
     public Sprite spriteMuro;
+
+    public Sprite spriteBarcoAzul;
+    public Sprite spriteBarcoAzulSeleccionado;
+
+    public Sprite spriteBarcoRojo;
+    public Sprite spriteBarcoRojoSeleccionado;
+
+    public Sprite spriteBarcoVerde;
+    public Sprite spriteBarcoVerdeSeleccionado;
 
     //--------ATRIBUTOS--------
 
 
 
     // Use this for initialization
-    void Start ()
+    void Start()
     {
         instance = this;
 
-        InicializaSprites();
-
         _tablero = new Tablero();
         colocaTablero();
-	}  
 
-	// Update is called once per frame
-	void Update () {
-		
-	}
+        _seleccionado = TipoBarco.ninguno;
+        ConstruyeUnidades();
+    }
 
-    void InicializaSprites()
+    // Update is called once per frame
+    void Update()
     {
-        spriteAgua = aguaPrefab.GetComponent<SpriteRenderer>().sprite;
-        spriteAguaProfunda = aguaProfundaPrefab.GetComponent<SpriteRenderer>().sprite;
-        spriteMuro = muroPrefab.GetComponent<SpriteRenderer>().sprite;
 
     }
 
@@ -64,33 +62,54 @@ public class GameManager : MonoBehaviour {
         {
             for (int x = 0; x < 10; x++)
             {
-                Pos posAux = new Pos(x,y);
+                //Creamos gameObject
+                GameObject GOTileAux = Instantiate(tilePrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
+
                 Tile tileAux = _tablero.GetTile(x, y);
 
+                //SpriteRenderer
                 switch (tileAux.GetTerreno())
                 {
                     case Terreno.agua:
-                        GameObject aguaAux = Instantiate(aguaPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
-
-                        aguaAux.AddComponent<Casilla>().ConstruyeCasilla(tileAux);
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteAgua;
                         break;
 
                     case Terreno.aguaProfunda:
-                        GameObject aguaProfundaAux = Instantiate(aguaProfundaPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
-                        aguaProfundaAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
-
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteAguaProfunda;
                         break;
 
                     case Terreno.muro:
-                        GameObject muroAux = Instantiate(muroPrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
-                        muroAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
-
+                        GOTileAux.GetComponent<SpriteRenderer>().sprite = spriteMuro;
                         break;
                 }
 
+                //Casilla
+                GOTileAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
             }
 
         }
 
+    }
+
+    void ConstruyeUnidades()
+    {
+        //Azul
+        Pos posAzul = new Pos(0, 0);
+        GameObject barcoAzul = Instantiate(barcoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
+        barcoAzul.name = "BarcoAzul";
+
+
+        LogicaBarco logicaBarcoAzul = new LogicaBarco(TipoBarco.azul, posAzul);
+
+        barcoAzul.GetComponent<Barco>().ConstruyeBarco(logicaBarcoAzul,spriteBarcoAzul,spriteBarcoAzulSeleccionado);
+    }
+
+
+
+    public TipoBarco GetSeleccionado() { return _seleccionado; }
+
+    public void SetSeleccionado(TipoBarco colBarco)
+    {
+        _seleccionado = colBarco;
     }
 }

@@ -26,4 +26,7 @@ public class Pos
     int _y;
 }
 
+public enum TipoBarco { rojo, azul, verde, ninguno };
+
+
 //--------TIPOS---------
