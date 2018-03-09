@@ -36,5 +36,6 @@ public class Tablero {
     }
 
     public Tile GetTile(int x, int y) { return _matriz[y,x]; }
+    public Tile GetTile(Pos pos) { return _matriz[pos.GetY(), pos.GetX()]; }
 
 }

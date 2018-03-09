@@ -93,15 +93,27 @@ public class GameManager : MonoBehaviour
 
     void ConstruyeUnidades()
     {
-        //Azul
-        Pos posAzul = new Pos(0, 0);
-        GameObject barcoAzul = Instantiate(barcoPrefab, new Vector3(0, 0, 0), Quaternion.identity);
-        barcoAzul.name = "BarcoAzul";
+
+        CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado);
+        CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado);
+        CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado);
 
 
-        LogicaBarco logicaBarcoAzul = new LogicaBarco(TipoBarco.azul, posAzul);
+    }
 
-        barcoAzul.GetComponent<Barco>().ConstruyeBarco(logicaBarcoAzul,spriteBarcoAzul,spriteBarcoAzulSeleccionado);
+    void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado)
+    {
+        Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+
+        while (_tablero.GetTile(posAux).GetTerreno() == Terreno.muro) 
+            posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+
+        GameObject barco = Instantiate(barcoPrefab, new Vector3(posAux.GetX() * _distancia, -posAux.GetY()*_distancia, 0), Quaternion.identity);
+        barco.name = nombre;
+
+        LogicaBarco logicaBarco = new LogicaBarco(tipoBarco, posAux);
+
+        barco.GetComponent<Barco>().ConstruyeBarco(logicaBarco, spriteBarco, spriteBarcoSeleccionado);
     }
 
 
