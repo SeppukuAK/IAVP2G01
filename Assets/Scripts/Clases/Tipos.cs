@@ -5,6 +5,7 @@ using System.Text;
 
 //--------TIPOS---------
 public enum Terreno { agua, aguaProfunda, muro, vacio };
+public enum Direccion { arriba, abajo, izquierda, derecha, idle };
 
 //Origen
 public class Pos
