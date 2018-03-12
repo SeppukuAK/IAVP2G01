@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.5748171, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
 --- !u!157 &3
 LightmapSettings:
   m_ObjectHideFlags: 0
@@ -1636,6 +1636,48 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
+--- !u!1001 &745148207
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4691205375513496, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+      propertyPath: m_RootOrder
+      value: 5
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_ParentPrefab: {fileID: 100100000, guid: c0364725cba880145b9d0abf6f185f47, type: 2}
+  m_IsPrefabParent: 0
 --- !u!1 &764008955
 GameObject:
   m_ObjectHideFlags: 0
@@ -2836,6 +2878,7 @@ MonoBehaviour:
   tilePrefab: {fileID: 1148206443964432, guid: 2b19724b9bf64a94a9dad8d11bd2a493, type: 2}
   barcoPrefab: {fileID: 1076931395240936, guid: d4361994a9628f94e912556191995802,
     type: 2}
+  flechaPrefab: {fileID: 0}
   spriteAgua: {fileID: 21300000, guid: 5cea7ff7661f4e747883360a3e221ecb, type: 3}
   spriteAguaProfunda: {fileID: 21300000, guid: 5a98e9066a7fbbf439c9cb06f1a21b7c, type: 3}
   spriteMuro: {fileID: 21300000, guid: 45278655f51884a47a0f1a685b8fa40b, type: 3}
@@ -2848,6 +2891,9 @@ MonoBehaviour:
   spriteBarcoVerde: {fileID: 21300000, guid: c34a1a7caee976e409558427c9718a8c, type: 3}
   spriteBarcoVerdeSeleccionado: {fileID: 21300000, guid: f5f4107c1c0cfea4eab99e7d69a94362,
     type: 3}
+  flechaRoja: {fileID: 0}
+  flechaAzul: {fileID: 0}
+  flechaVerde: {fileID: 0}
 --- !u!4 &1433410362
 Transform:
   m_ObjectHideFlags: 0

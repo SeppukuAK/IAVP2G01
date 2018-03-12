@@ -30,8 +30,14 @@ public class Barco : MonoBehaviour {
             SpriteRenderer render = GetComponent<SpriteRenderer>();
             render.sprite = _spriteBarcoSeleccionado;
 
-            GameManager.instance.SetSeleccionado(_logicaBarco.GetTipoBarco());
+			GameManager.instance.SetSeleccionado(_logicaBarco.GetTipoBarco(),this.gameObject);
         }
 
     }
+
+	public void SetSpriteDeseleccionado()
+	{
+		GetComponent<SpriteRenderer>().sprite = _spriteBarco;
+	}
+
 }

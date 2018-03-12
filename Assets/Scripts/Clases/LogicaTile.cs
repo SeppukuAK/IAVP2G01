@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 
 
-public class Tile
+public class LogicaTile
 {
     Terreno _terreno;
     Pos _pos;
 
-    public Tile()
+	public LogicaTile()
     {
         _pos = new Pos(0, 0);
         _terreno = Terreno.vacio;
     }
 
-    public Tile(Terreno terreno, Pos pos)
+	public LogicaTile(Terreno terreno, Pos pos)
     {
         _terreno = terreno;
         _pos = pos;

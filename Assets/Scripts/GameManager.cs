@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
 
-    Tablero _tablero;
+	LogicaTablero _logicaTablero;
     TipoBarco _seleccionado;
 
     const float _distancia = 0.64f;
@@ -16,6 +16,7 @@ public class GameManager : MonoBehaviour
 
     public GameObject tilePrefab;
     public GameObject barcoPrefab;
+	public GameObject flechaPrefab;
 
     public Sprite spriteAgua;
     public Sprite spriteAguaProfunda;
@@ -30,16 +31,22 @@ public class GameManager : MonoBehaviour
     public Sprite spriteBarcoVerde;
     public Sprite spriteBarcoVerdeSeleccionado;
 
+	public Sprite flechaRoja;
+	public Sprite flechaAzul;
+	public Sprite flechaVerde;
+
     //--------ATRIBUTOS--------
 
+	GameObject _barcoSeleccionado;
 
 
     // Use this for initialization
     void Start()
     {
         instance = this;
+		_barcoSeleccionado = null;
 
-        _tablero = new Tablero();
+		_logicaTablero = new LogicaTablero();
         colocaTablero();
 
         _seleccionado = TipoBarco.ninguno;
@@ -65,7 +72,7 @@ public class GameManager : MonoBehaviour
                 //Creamos gameObject
                 GameObject GOTileAux = Instantiate(tilePrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
 
-                Tile tileAux = _tablero.GetTile(x, y);
+				LogicaTile tileAux = _logicaTablero.GetLogicaTile(x, y);
 
                 //SpriteRenderer
                 switch (tileAux.GetTerreno())
@@ -84,7 +91,7 @@ public class GameManager : MonoBehaviour
                 }
 
                 //Casilla
-                GOTileAux.GetComponent<Casilla>().ConstruyeCasilla(tileAux);
+				GOTileAux.GetComponent<Tile>().ConstruyeCasilla(tileAux);
             }
 
         }
@@ -96,29 +103,27 @@ public class GameManager : MonoBehaviour
         Pos [] posBarcos = new Pos[3];
 
         for (int i = 0; i < 3; i++)
-        {
-            posBarcos[i].SetX(-1);
-            posBarcos[i].SetY(-1);
-        }
-
-        CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, posBarcos);
-        CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado, posBarcos);
-        CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado, posBarcos);
-
+			posBarcos[i] = new Pos(-1,-1);
+        
+		CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado,ref posBarcos);
+		CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, ref posBarcos);
+		CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado,ref posBarcos);
     }
 
-    void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, Pos []posBarcos)
+	void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, ref Pos []posBarcos)
     {
-        Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+		Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
 
         bool hayBarco = HayBarco(posAux,posBarcos);
 
-        while (_tablero.GetTile(posAux).GetTerreno() == Terreno.muro || hayBarco)
+		while (_logicaTablero.GetLogicaTile(posAux).GetTerreno() == Terreno.muro || hayBarco)
         {
-            posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+			posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
             hayBarco = HayBarco(posAux, posBarcos);
 
         }
+
+		posBarcos [(int)tipoBarco] = posAux;
         GameObject barco = Instantiate(barcoPrefab, new Vector3(posAux.GetX() * _distancia, -posAux.GetY()*_distancia, 0), Quaternion.identity);
         barco.name = nombre;
 
@@ -144,8 +149,17 @@ public class GameManager : MonoBehaviour
 
     public TipoBarco GetSeleccionado() { return _seleccionado; }
 
-    public void SetSeleccionado(TipoBarco colBarco)
+	public void SetSeleccionado(TipoBarco colBarco, GameObject barco)
     {
         _seleccionado = colBarco;
+		_barcoSeleccionado = barco;
+
     }
+
+	public void DeseleccionaBarco()
+	{
+		_barcoSeleccionado.GetComponent<Barco> ().SetSpriteDeseleccionado ();
+
+	}
+
 }

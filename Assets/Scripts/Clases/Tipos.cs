@@ -9,11 +9,6 @@ public enum Terreno { agua, aguaProfunda, muro, vacio };
 //Origen
 public class Pos
 {
-    public Pos()
-    {
-        _x = 0;
-        _y = 0;
-    }
     public Pos(int x, int y)
     {
         _x = x;
@@ -29,6 +24,16 @@ public class Pos
 
     int _x;
     int _y;
+
+	public static bool operator ==(Pos a, Pos b)
+	{
+		return (a.GetX () == b.GetX () && a.GetY () == b.GetY ());
+	}
+
+	public static bool operator !=(Pos a, Pos b)
+	{
+		return (a.GetX () != b.GetX () || a.GetY () != b.GetY ());
+	}
 }
 
 public enum TipoBarco { rojo, azul, verde, ninguno };
