@@ -93,21 +93,32 @@ public class GameManager : MonoBehaviour
 
     void ConstruyeUnidades()
     {
+        Pos [] posBarcos = new Pos[3];
 
-        CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado);
-        CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado);
-        CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado);
+        for (int i = 0; i < 3; i++)
+        {
+            posBarcos[i].SetX(-1);
+            posBarcos[i].SetY(-1);
+        }
 
+        CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, posBarcos);
+        CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado, posBarcos);
+        CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado, posBarcos);
 
     }
 
-    void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado)
+    void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, Pos []posBarcos)
     {
         Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
 
-        while (_tablero.GetTile(posAux).GetTerreno() == Terreno.muro) 
-            posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+        bool hayBarco = HayBarco(posAux,posBarcos);
 
+        while (_tablero.GetTile(posAux).GetTerreno() == Terreno.muro || hayBarco)
+        {
+            posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
+            hayBarco = HayBarco(posAux, posBarcos);
+
+        }
         GameObject barco = Instantiate(barcoPrefab, new Vector3(posAux.GetX() * _distancia, -posAux.GetY()*_distancia, 0), Quaternion.identity);
         barco.name = nombre;
 
@@ -115,8 +126,21 @@ public class GameManager : MonoBehaviour
 
         barco.GetComponent<Barco>().ConstruyeBarco(logicaBarco, spriteBarco, spriteBarcoSeleccionado);
     }
+    //Comprueba si hay barco en una posición
+    bool HayBarco(Pos pos, Pos[] posBarcos)
+    {
+        bool hayBarco = false;
 
-
+        int i = 0;
+        while (!hayBarco && i < 3)
+        {
+            //Comprobamos si la posicion del barco a colocar coincide con la de un barco ya colocado
+            if (posBarcos[i] == pos)
+                hayBarco = true;
+            i++;
+        }
+        return hayBarco;
+    }
 
     public TipoBarco GetSeleccionado() { return _seleccionado; }
 

@@ -9,6 +9,11 @@ public enum Terreno { agua, aguaProfunda, muro, vacio };
 //Origen
 public class Pos
 {
+    public Pos()
+    {
+        _x = 0;
+        _y = 0;
+    }
     public Pos(int x, int y)
     {
         _x = x;
