@@ -25,7 +25,7 @@ public class Barco : MonoBehaviour {
 
     private void OnMouseDown()
     {
-        if (GameManager.instance.GetSeleccionado() == TipoBarco.ninguno)
+        if (GameManager.instance.GetSeleccionado() == ColorUnidad.ninguno)
         {
             SpriteRenderer render = GetComponent<SpriteRenderer>();
             render.sprite = _spriteBarcoSeleccionado;
@@ -38,6 +38,12 @@ public class Barco : MonoBehaviour {
 	public void SetSpriteDeseleccionado()
 	{
 		GetComponent<SpriteRenderer>().sprite = _spriteBarco;
+
 	}
+
+    public LogicaBarco GetLogicaBarco()
+    {
+        return _logicaBarco;
+    }
 
 }

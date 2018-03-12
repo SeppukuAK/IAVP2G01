@@ -4,11 +4,10 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-
     public static GameManager instance;
 
 	LogicaTablero _logicaTablero;
-    TipoBarco _seleccionado;
+    ColorUnidad _seleccionado;
 
     const float _distancia = 0.64f;
 
@@ -16,7 +15,6 @@ public class GameManager : MonoBehaviour
 
     public GameObject tilePrefab;
     public GameObject barcoPrefab;
-	public GameObject flechaPrefab;
 
     public Sprite spriteAgua;
     public Sprite spriteAguaProfunda;
@@ -31,14 +29,13 @@ public class GameManager : MonoBehaviour
     public Sprite spriteBarcoVerde;
     public Sprite spriteBarcoVerdeSeleccionado;
 
-	public Sprite flechaRoja;
-	public Sprite flechaAzul;
-	public Sprite flechaVerde;
-
     //--------ATRIBUTOS--------
 
 	GameObject _barcoSeleccionado;
 
+    public GameObject flechaRoja;
+    public GameObject flechaAzul;
+    public GameObject flechaVerde;
 
     // Use this for initialization
     void Start()
@@ -49,7 +46,7 @@ public class GameManager : MonoBehaviour
 		_logicaTablero = new LogicaTablero();
         colocaTablero();
 
-        _seleccionado = TipoBarco.ninguno;
+        _seleccionado = ColorUnidad.ninguno;
         ConstruyeUnidades();
     }
 
@@ -59,6 +56,7 @@ public class GameManager : MonoBehaviour
 
     }
 
+    //---------------CONSTRUCCIÓN TILES------------------------
 
     //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
     void colocaTablero()
@@ -98,6 +96,11 @@ public class GameManager : MonoBehaviour
 
     }
 
+    //---------------CONSTRUCCIÓN TILES------------------------
+
+
+    //---------------CONSTRUCCIÓN UNIDADES------------------------
+
     void ConstruyeUnidades()
     {
         Pos [] posBarcos = new Pos[3];
@@ -105,12 +108,12 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 3; i++)
 			posBarcos[i] = new Pos(-1,-1);
         
-		CreaBarco("BarcoRojo", TipoBarco.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado,ref posBarcos);
-		CreaBarco("BarcoAzul", TipoBarco.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, ref posBarcos);
-		CreaBarco("BarcoVerde", TipoBarco.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado,ref posBarcos);
+		CreaBarco("BarcoRojo", ColorUnidad.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado,ref posBarcos);
+		CreaBarco("BarcoAzul", ColorUnidad.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, ref posBarcos);
+		CreaBarco("BarcoVerde", ColorUnidad.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado,ref posBarcos);
     }
 
-	void CreaBarco(string nombre, TipoBarco tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, ref Pos []posBarcos)
+	void CreaBarco(string nombre, ColorUnidad tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, ref Pos []posBarcos)
     {
 		Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
 
@@ -147,9 +150,12 @@ public class GameManager : MonoBehaviour
         return hayBarco;
     }
 
-    public TipoBarco GetSeleccionado() { return _seleccionado; }
+    //---------------CONSTRUCCIÓN UNIDADES------------------------
 
-	public void SetSeleccionado(TipoBarco colBarco, GameObject barco)
+
+    public ColorUnidad GetSeleccionado() { return _seleccionado; }
+
+	public void SetSeleccionado(ColorUnidad colBarco, GameObject barco)
     {
         _seleccionado = colBarco;
 		_barcoSeleccionado = barco;
@@ -158,8 +164,31 @@ public class GameManager : MonoBehaviour
 
 	public void DeseleccionaBarco()
 	{
-		_barcoSeleccionado.GetComponent<Barco> ().SetSpriteDeseleccionado ();
-
+        _barcoSeleccionado.GetComponent<Barco>().SetSpriteDeseleccionado();
+        SetSeleccionado(ColorUnidad.ninguno, null);
 	}
+
+    public void MoverBarco(Pos pos)
+    {
+        _barcoSeleccionado.GetComponent<Barco>().GetLogicaBarco().SetFlecha(new Pos(pos.GetX(),pos.GetY()));
+
+        switch (_seleccionado)
+        {
+            case ColorUnidad.azul:
+                flechaAzul.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
+                break;
+
+            case ColorUnidad.rojo:
+                flechaRoja.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
+                break;
+
+            case ColorUnidad.verde:
+                flechaVerde.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
+                break;
+        }
+
+        DeseleccionaBarco();
+
+    }
 
 }

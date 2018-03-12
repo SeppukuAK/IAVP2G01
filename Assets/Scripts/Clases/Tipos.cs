@@ -36,7 +36,7 @@ public class Pos
 	}
 }
 
-public enum TipoBarco { rojo, azul, verde, ninguno };
+public enum ColorUnidad { rojo, azul, verde, ninguno };
 
 
 //--------TIPOS---------

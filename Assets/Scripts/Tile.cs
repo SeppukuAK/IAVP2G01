@@ -18,7 +18,7 @@ public class Tile : MonoBehaviour {
 
     private void OnMouseDown()
     {
-		if (GameManager.instance.GetSeleccionado () == TipoBarco.ninguno) {
+		if (GameManager.instance.GetSeleccionado () == ColorUnidad.ninguno) {
 			SpriteRenderer render = GetComponent<SpriteRenderer> ();
 
 			switch (_logicaTile.GetTerreno ()) {
@@ -43,13 +43,12 @@ public class Tile : MonoBehaviour {
 		else if (_logicaTile.GetTerreno () == Terreno.muro) {
 			
 			GameManager.instance.DeseleccionaBarco ();
-			GameManager.instance.SetSeleccionado (TipoBarco.ninguno, null);
 		} 
 
 		//Mover
 		else 
 		{
-
+            GameManager.instance.MoverBarco(_logicaTile.GetPos());
 		}
 			
     }
