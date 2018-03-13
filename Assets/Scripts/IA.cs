@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Priority_Queue;
 
 public class Nodo
 {
@@ -57,4 +58,13 @@ public class Nodo
 
 }
 
+
+public class AEstrella
+{
+    public AEstrella()
+    {
+
+    }
+
+}
 
