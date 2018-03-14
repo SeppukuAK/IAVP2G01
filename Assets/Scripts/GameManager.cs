@@ -6,7 +6,11 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
-	LogicaTablero _logicaTablero;
+    public const int Ancho = 10;
+    public const int Alto = 10;
+    public const int WorldSize = 100;
+
+    LogicaTablero _logicaTablero;
     ColorUnidad _seleccionado;
 
     const float _distancia = 0.64f;

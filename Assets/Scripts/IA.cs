@@ -3,34 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using Priority_Queue;
+
+
 
 public class Nodo
 {
-    private LogicaTile[,] _tab; //Configuración
     private Nodo _padre;
-    private Direccion _operador; //Operador que se aplicó al nodo padre para generar este nodo hijo
-    private int _coste; //Coste de la ruta: Desde la raíz hasta aquí
 
-    public Nodo(LogicaTile[,] tab, Nodo padre, Direccion operador, int coste)
+    private Pos _pos;
+
+    private int _f; //Coste desde el inicio a este nodo
+    private int _g; //Coste desde este nodo al nodo objetivo
+    
+    //Indice de este nodo en el array de mundo
+    private int _valor; //Coste desde este nodo al nodo objetivo
+
+    public Nodo(Nodo padre, Pos pos)
     {
-        _tab = new LogicaTile[10, 10];
-        IgualarTablero(ref _tab, tab);
         _padre = padre;
-        _operador = operador;
-        _coste = coste;
-
-    }
-
-    //Getters para obtener el tablero, el coste, el padre del nodo y el operador
-
-    public LogicaTile[,] getTablero()
-    {
-        return _tab;
-    }
-
-    public int getCoste()
-    {
-        return _coste;
+        _pos = pos;
+        _valor = pos.GetX() + pos.GetY() * GameManager.Ancho;
+        _f = _g = 0;
     }
 
     public Nodo getPadre()
@@ -38,22 +32,76 @@ public class Nodo
         return _padre;
     }
 
-    public Direccion getOperador()
+}
+
+public class AEstrella
+{
+
+    public AEstrella(LogicaTile[,] world, Pos inicio, Pos fin)
     {
-        return _operador;
+        _world = world;
+        _posIni = inicio;
+        _posFin = fin;
+
+        CalculatePath();
     }
-    static void IgualarTablero(ref LogicaTile[,] tab, LogicaTile[,] tab2)
+
+    //Distancia de un punto a otro. Solo direcciones cardinales
+    int ManhattanDistance(Pos inicio,Pos fin)
     {
-        //Coordenada y
-        for (int i = 0; i < 3; i++)
-        {
-            //Coordenada x
-            for (int j = 0; j < 3; j++)
-            {
-                tab[i, j] = tab2[i, j];
-            }
-        }
+        return (Math.Abs(inicio.GetX() - fin.GetX()) + Math.Abs(inicio.GetY() - fin.GetY()));
     }
+
+    Queue <Pos> Neighbours(int x, int y)
+    {
+        int N = y - 1;
+        int S = y + 1;
+        int E = x + 1;
+        int W = x - 1;
+
+        Queue<Pos> adyacentes = new Queue<Pos>();
+
+        if (N >= 0 && CanWalkHere(x, N))
+            adyacentes.Enqueue(new Pos(x, N));
+        if (N >= 0 && CanWalkHere(E, y))
+            adyacentes.Enqueue(new Pos(E, y));
+        if (N >= 0 && CanWalkHere(x, S))
+            adyacentes.Enqueue(new Pos(x, S));
+        if (N >= 0 && CanWalkHere(W, y))
+            adyacentes.Enqueue(new Pos(W, y));
+
+        return adyacentes;
+    }
+
+    bool CanWalkHere(int x, int y)
+    {
+        return ((int)_world[y, x].GetTerreno() <= maxWalkableTileNum);
+    }
+
+    //Hace al A*
+    void CalculatePath()
+    {
+        Nodo nodoIni = new Nodo(null, _posIni);
+        Nodo nodoFin = new Nodo(null, _posFin);
+
+
+
+    }
+
+    //Empty si no hay camino posible
+    public Queue<Direccion> GetCamino()
+    {
+        return _camino;
+    }
+
+    LogicaTile[,] _world;
+    Pos _posIni;
+    Pos _posFin;
+
+    Queue<Direccion> _camino;
+
+    //Todo superior a este número esta bloqueado
+    const int maxWalkableTileNum = 1;
 
 }
 
