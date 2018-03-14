@@ -13,12 +13,13 @@ public class GameManager : MonoBehaviour
     LogicaTablero _logicaTablero;
     ColorUnidad _seleccionado;
 
-    const float _distancia = 0.64f;
+    public const float Distancia = 0.64f;
 
     //--------ATRIBUTOS--------
 
     public GameObject tilePrefab;
     public GameObject barcoPrefab;
+	public GameObject flechaPrefab;
 
     public Sprite spriteAgua;
     public Sprite spriteAguaProfunda;
@@ -33,13 +34,15 @@ public class GameManager : MonoBehaviour
     public Sprite spriteBarcoVerde;
     public Sprite spriteBarcoVerdeSeleccionado;
 
+	public Sprite spriteFlechaRoja;
+	public Sprite spriteFlechaAzul;
+	public Sprite spriteFlechaVerde;
+
     //--------ATRIBUTOS--------
 
 	GameObject _barcoSeleccionado;
 
-    public GameObject flechaRoja;
-    public GameObject flechaAzul;
-    public GameObject flechaVerde;
+
 
     // Use this for initialization
     void Start()
@@ -72,7 +75,7 @@ public class GameManager : MonoBehaviour
             for (int x = 0; x < 10; x++)
             {
                 //Creamos gameObject
-                GameObject GOTileAux = Instantiate(tilePrefab, new Vector3(x * _distancia, -y * _distancia, 0), Quaternion.identity, GOTablero.transform);
+                GameObject GOTileAux = Instantiate(tilePrefab, new Vector3(x * Distancia, -y * Distancia, 0), Quaternion.identity, GOTablero.transform);
 
 				LogicaTile tileAux = _logicaTablero.GetLogicaTile(x, y);
 
@@ -112,12 +115,12 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < 3; i++)
 			posBarcos[i] = new Pos(-1,-1);
         
-		CreaBarco("BarcoRojo", ColorUnidad.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado,ref posBarcos);
-		CreaBarco("BarcoAzul", ColorUnidad.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, ref posBarcos);
-		CreaBarco("BarcoVerde", ColorUnidad.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado,ref posBarcos);
+		CreaBarco("BarcoRojo", ColorUnidad.rojo, spriteBarcoRojo, spriteBarcoRojoSeleccionado,spriteFlechaRoja,ref posBarcos);
+		CreaBarco("BarcoAzul", ColorUnidad.azul, spriteBarcoAzul, spriteBarcoAzulSeleccionado, spriteFlechaAzul,ref posBarcos);
+		CreaBarco("BarcoVerde", ColorUnidad.verde, spriteBarcoVerde, spriteBarcoVerdeSeleccionado,spriteFlechaVerde,ref posBarcos);
     }
 
-	void CreaBarco(string nombre, ColorUnidad tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, ref Pos []posBarcos)
+	void CreaBarco(string nombre, ColorUnidad tipoBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado, Sprite spriteFlecha, ref Pos []posBarcos)
     {
 		Pos posAux = new Pos(Random.Range(0, 10), Random.Range(0, 10));
 
@@ -131,12 +134,16 @@ public class GameManager : MonoBehaviour
         }
 
 		posBarcos [(int)tipoBarco] = posAux;
-        GameObject barco = Instantiate(barcoPrefab, new Vector3(posAux.GetX() * _distancia, -posAux.GetY()*_distancia, 0), Quaternion.identity);
+        GameObject barco = Instantiate(barcoPrefab, new Vector3(posAux.GetX() * Distancia, -posAux.GetY()*Distancia, 0), Quaternion.identity);
         barco.name = nombre;
 
         LogicaBarco logicaBarco = new LogicaBarco(tipoBarco, posAux);
 
-        barco.GetComponent<Barco>().ConstruyeBarco(logicaBarco, spriteBarco, spriteBarcoSeleccionado);
+		//Construcción de flecha
+		GameObject flecha = Instantiate(flechaPrefab, new Vector3(posAux.GetX() * Distancia, -posAux.GetY()*Distancia, 0), Quaternion.identity);
+		flecha.GetComponent<SpriteRenderer>().sprite = spriteFlecha;
+
+        barco.GetComponent<Barco>().ConstruyeBarco(logicaBarco, spriteBarco, spriteBarcoSeleccionado,flecha);
     }
     //Comprueba si hay barco en una posición
     bool HayBarco(Pos pos, Pos[] posBarcos)
@@ -165,37 +172,21 @@ public class GameManager : MonoBehaviour
 		_barcoSeleccionado = barco;
 
     }
+		
+    public void MoverBarco(Pos pos)
+    {
+		_barcoSeleccionado.GetComponent<Barco> ().EmpiezaMovimiento(pos);
+    }
+		
+	public LogicaTablero GetLogicaTablero()
+	{
+		return _logicaTablero;
+	}
 
 	public void DeseleccionaBarco()
 	{
-        _barcoSeleccionado.GetComponent<Barco>().SetSpriteDeseleccionado();
-        SetSeleccionado(ColorUnidad.ninguno, null);
+		_barcoSeleccionado.GetComponent<Barco> ().SetSpriteDeseleccionado ();
+		SetSeleccionado(ColorUnidad.ninguno, null);
 	}
-
-    public void MoverBarco(Pos pos)
-    {
-		Barco barcoComponent = _barcoSeleccionado.GetComponent<Barco> ();
-		barcoComponent.GetLogicaBarco().SetFlecha(new Pos(pos.GetX(),pos.GetY()));
-
-        switch (_seleccionado)
-        {
-            case ColorUnidad.azul:
-                flechaAzul.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
-                break;
-
-            case ColorUnidad.rojo:
-                flechaRoja.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
-                break;
-
-            case ColorUnidad.verde:
-                flechaVerde.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
-                break;
-        }
-        DeseleccionaBarco();
-
-		AEstrella A = new AEstrella (_logicaTablero.GetLogicaTablero (), barcoComponent.GetLogicaBarco ().GetPos (), pos);
-		A.GetCamino ();
-
-    }
 
 }

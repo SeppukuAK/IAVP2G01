@@ -40,8 +40,8 @@ public class Tile : MonoBehaviour {
 
 			}
 		} 
-		else if (_logicaTile.GetTerreno () == Terreno.muro) {
-			
+		else if (_logicaTile.GetTerreno () == Terreno.muro)
+		{
 			GameManager.instance.DeseleccionaBarco ();
 		} 
 

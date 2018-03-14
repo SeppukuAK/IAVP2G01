@@ -32,7 +32,7 @@ public class Nodo
         return _padre;
     }
 		
-	public Pos getPos()
+	public Pos GetPos()
 	{
 		return _pos;
 	}
@@ -152,7 +152,7 @@ public class AEstrella
 				Closed.Add (nodoAux);
 				Nodo camino = Closed.Last ();
 				do {
-					result.Add (new Pos (camino.getPos().GetX(), camino.getPos().GetY()));
+					result.Add (new Pos (camino.GetPos().GetX(), camino.GetPos().GetY()));
 					camino = camino.getPadre ();
 				} while (camino.getPadre() != null);
 
@@ -169,7 +169,7 @@ public class AEstrella
 			else 
 			{
 				//Encontramos todos los nodos alcanzables
-				Queue <Pos> adyacentes = Neighbours(nodoAux.getPos());
+				Queue <Pos> adyacentes = Neighbours(nodoAux.GetPos());
 
 				//Comprobamos todos los adyacentes alcanzables
 				while (adyacentes.Count > 0)
@@ -180,12 +180,15 @@ public class AEstrella
 					//Comprobamos si ha sido ya visitado
 					if (!visitados [nodoAdy.GetValor ()]) 
 					{
+						int costeTerreno = 0;
+						if (_world [nodoAdy.GetPos ().GetY (), nodoAdy.GetPos ().GetX ()].GetTerreno () == Terreno.aguaProfunda)
+							costeTerreno =2;
+
 						//Calculamos el coste estimado desde el nodo inicio hasta este nodo
-						nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy,nodoAux.getPos()));
+						nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy,nodoAux.GetPos())  + costeTerreno);
 
 						//Calculamos el coste estimado desde este nodo hasta el destino
-						int costeTerreno = (int)_world[nodoAdy.getPos().GetY(),nodoAdy.getPos().GetX()].GetTerreno();
-						nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy,nodoFin.getPos()) + costeTerreno);
+						nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy,nodoFin.GetPos()));
 
 						//Metemos este nodo en la lista para poder ser abierto
 						Open.Add(nodoAdy);

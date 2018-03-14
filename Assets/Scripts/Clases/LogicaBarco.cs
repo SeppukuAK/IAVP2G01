@@ -28,6 +28,7 @@ public class LogicaBarco
 
 
     public Pos GetPos() { return _pos; }
+	public void SetPos(Pos pos) { _pos = pos; }
 
 
     public Pos GetFlecha() { return _flecha; }
