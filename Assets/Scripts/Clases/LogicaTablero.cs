@@ -37,5 +37,7 @@ public class LogicaTablero {
 
 	public LogicaTile GetLogicaTile(int x, int y) { return _matriz[y,x]; }
 	public LogicaTile GetLogicaTile(Pos pos) { return _matriz[pos.GetY(), pos.GetX()]; }
+	public LogicaTile[,] GetLogicaTablero() { return _matriz; }
+
 
 }

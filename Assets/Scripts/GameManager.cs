@@ -174,7 +174,8 @@ public class GameManager : MonoBehaviour
 
     public void MoverBarco(Pos pos)
     {
-        _barcoSeleccionado.GetComponent<Barco>().GetLogicaBarco().SetFlecha(new Pos(pos.GetX(),pos.GetY()));
+		Barco barcoComponent = _barcoSeleccionado.GetComponent<Barco> ();
+		barcoComponent.GetLogicaBarco().SetFlecha(new Pos(pos.GetX(),pos.GetY()));
 
         switch (_seleccionado)
         {
@@ -190,8 +191,10 @@ public class GameManager : MonoBehaviour
                 flechaVerde.transform.position = new Vector3(pos.GetX() * _distancia, -pos.GetY() * _distancia, 0);
                 break;
         }
-
         DeseleccionaBarco();
+
+		AEstrella A = new AEstrella (_logicaTablero.GetLogicaTablero (), barcoComponent.GetLogicaBarco ().GetPos (), pos);
+		A.GetCamino ();
 
     }
 
