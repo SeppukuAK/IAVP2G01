@@ -1,6 +1,0 @@
-C:\hlocal\IAVP2G01\PriorityQueue\obj\Debug\Priority Queue.csprojResolveAssemblyReference.cache
-C:\hlocal\IAVP2G01\PriorityQueue\obj\Debug\Priority Queue.csproj.CoreCompileInputs.cache
-C:\hlocal\IAVP2G01\PriorityQueue\bin\Debug\Priority Queue.dll
-C:\hlocal\IAVP2G01\PriorityQueue\bin\Debug\Priority Queue.pdb
-C:\hlocal\IAVP2G01\PriorityQueue\obj\Debug\Priority Queue.dll
-C:\hlocal\IAVP2G01\PriorityQueue\obj\Debug\Priority Queue.pdb
