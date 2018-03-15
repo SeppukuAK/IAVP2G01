@@ -66,29 +66,27 @@ public class Barco : MonoBehaviour {
 		MueveBarco (A.GetCamino ());
 	}
 
-    public void MueveBarco(List <Pos> movimientos)
+    public void MueveBarco(Stack<Pos> camino)
     {
-		StartCoroutine ("AvanzaUnPaso",movimientos);
+		StartCoroutine ("AvanzaUnPaso", camino);
     }
 
-	IEnumerator AvanzaUnPaso(List <Pos> movimientos)
+	IEnumerator AvanzaUnPaso(Stack<Pos> camino)
 	{
-		Pos newPos = movimientos.First ();
+        Pos newPos = camino.Pop();
 
-		movimientos.Remove (newPos);
-
-		_logicaBarco.SetPos (newPos);
+        _logicaBarco.SetPos (newPos);
 
 		this.gameObject.transform.position = new Vector3 (newPos.GetX ()*GameManager.Distancia , -newPos.GetY ()*GameManager.Distancia, 0);
 
-		if (movimientos.Count > 0) 
-		{
-			if (GameManager.instance.GetLogicaTablero().GetLogicaTile(newPos).GetTerreno() == Terreno.agua)
+        if (camino.Count > 0)
+        {
+            if (GameManager.instance.GetLogicaTablero().GetLogicaTile(newPos).GetTerreno() == Terreno.agua)
 				yield return new WaitForSeconds (0.2f);
 			else
 				yield return new WaitForSeconds (0.4f);
 			
-			MueveBarco (movimientos);
+			MueveBarco (camino);
 		}
 		else 
 		{

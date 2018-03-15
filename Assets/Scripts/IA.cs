@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,7 +18,7 @@ public class Nodo
     private int _g; //Coste desde este nodo al nodo objetivo
     
     //Indice de este nodo en el array de mundo
-    private int _valor; //Coste desde este nodo al nodo objetivo
+    private int _valor;
 
     public Nodo(Nodo padre, Pos pos)
     {
@@ -69,7 +70,7 @@ public class AEstrella
         _posIni = inicio;
         _posFin = fin;
 
-        CalculatePath();
+        _camino = CalculatePath();
     }
 
     //Distancia de un punto a otro. Solo direcciones cardinales
@@ -106,114 +107,123 @@ public class AEstrella
     }
 
     //Hace al A*
-    void CalculatePath()
+    Stack<Pos> CalculatePath()
     {
         Nodo nodoIni = new Nodo(null, _posIni);
         Nodo nodoFin = new Nodo(null, _posFin);
 
-		//Contiene todas las casillas del tablero. Si true esta visitado
-		bool[] visitados = new bool[GameManager.WorldSize];
-		visitados [nodoIni.GetValor ()] = true;
+        //Calculamos el coste estimado desde este nodo hasta el destino
+        nodoIni.SetF(ManhattanDistance(nodoIni.GetPos(), nodoFin.GetPos()));
 
-		//Lista de nodos actualmente abiertos
-		List<Nodo> Open = new List<Nodo> ();
-		Open.Add (nodoIni);
+        //Lista de nodos actualmente abiertos
 
-		//Lista de nodos cerrados
-		List<Nodo> Closed = new List<Nodo>();
+        List <Nodo> frontera = new List<Nodo>();
+        frontera.Add(nodoIni);
 
-		//Lista del resultado final
-		List <Pos> result = new List<Pos>();
+        //Contiene todas las casillas del tablero. Si true esta visitado
+        Hashtable visitados = new Hashtable();
 
 		//Operamos hasta que en la lista de abiertos no quede ninguno
-		while (Open.Count > 0)
+		while (true)
 		{
-			//Encontramos el mejor nodo a expandir
-			int max = GameManager.WorldSize;
-			int min = -1;
+            if (frontera.Count() <= 0)
+                return null;
 
-			for (int i = 0; i < Open.Count; i++) 
-			{
-				if (Open [i].GetF () < max) 
-				{
-					max = Open [i].GetF ();
-					min = i;
+            //Encontramos el mejor nodo a expandir
+            int max = GameManager.WorldSize;
+            int min = -1;
 
-				}
+            for (int i = 0; i < frontera.Count; i++)
+            {
+                if (frontera[i].GetF() < max)
+                {
+                    max = frontera[i].GetF();
+                    min = i;
 
-			}
+                }
 
-			//Cogemos el siguiente nodo y lo quitamos de la lista de abiertos
-			Nodo nodoAux = Open.ElementAt(min);
-			Open.Remove (nodoAux);
+            }
 
-			//Comprobamos si este nodo es el destino
-			if (nodoAux.GetValor () == nodoFin.GetValor ()) {
-				Closed.Add (nodoAux);
-				Nodo camino = Closed.Last ();
-				do {
-					result.Add (new Pos (camino.GetPos().GetX(), camino.GetPos().GetY()));
-					camino = camino.getPadre ();
-				} while (camino.getPadre() != null);
+            //Cogemos el siguiente nodo y lo quitamos de la lista de abiertos
+            Nodo nodoAux = frontera.ElementAt(min);
+            frontera.Remove(nodoAux);
 
-				//Limpiamos las listas utilizadas
-				Closed.Clear ();
-				Open.Clear ();
-				//visitados?
+            //Comprobamos si este nodo es el destino
+            if (nodoAux.GetValor() == nodoFin.GetValor())
+            {
+                Stack<Pos> queue = new Stack<Pos>();
 
-				//Queremos el camino desde el inicio al final
-				result.Reverse ();
-			} 
+                while (nodoAux != null)
+                {
+                    queue.Push(nodoAux.GetPos());
+                    nodoAux = nodoAux.getPadre();
+                }
+                return queue;
+            }
+
+            //La añadimos a visitados
+            if (!visitados.Contains((nodoAux.GetPos().GetHashCode())))
+                visitados.Add(nodoAux.GetPos().GetHashCode(),null); //Clave,valor
 
 			//No es el nodo resultado, hay que expandir
-			else 
+			//Encontramos todos los nodos alcanzables
+			Queue <Pos> adyacentes = Neighbours(nodoAux.GetPos());
+
+			//Comprobamos todos los adyacentes alcanzables
+			while (adyacentes.Count > 0)
 			{
-				//Encontramos todos los nodos alcanzables
-				Queue <Pos> adyacentes = Neighbours(nodoAux.GetPos());
+				Pos posAdy = adyacentes.Dequeue ();
+				Nodo nodoAdy = new Nodo (nodoAux, posAdy );
 
-				//Comprobamos todos los adyacentes alcanzables
-				while (adyacentes.Count > 0)
-				{
-					Pos posAdy = adyacentes.Dequeue ();
-					Nodo nodoAdy = new Nodo (nodoAux, posAdy );
+                //Si nunca ha sido encontrado
+                if (!visitados.Contains(nodoAdy.GetPos()) && !frontera.Contains(nodoAdy))
+                {
+                    //Calculamos el coste estimado desde el nodo inicio hasta este nodo
+                    nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy, nodoAux.GetPos()) + (int)_world[nodoAdy.GetPos().GetY(), nodoAdy.GetPos().GetX()].GetTerreno());
 
-					//Comprobamos si ha sido ya visitado
-					if (!visitados [nodoAdy.GetValor ()]) 
-					{
-						int costeTerreno = 0;
-						if (_world [nodoAdy.GetPos ().GetY (), nodoAdy.GetPos ().GetX ()].GetTerreno () == Terreno.aguaProfunda)
-							costeTerreno =2;
+                    //Calculamos el coste estimado desde este nodo hasta el destino
+                    nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
 
-						//Calculamos el coste estimado desde el nodo inicio hasta este nodo
-						nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy,nodoAux.GetPos())  + costeTerreno);
+                    //Metemos este nodo en la lista para poder ser abierto
+                    frontera.Add(nodoAdy);
+                }
 
-						//Calculamos el coste estimado desde este nodo hasta el destino
-						nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy,nodoFin.GetPos()));
+                bool encontrado = false;
+                int i = 0;
 
-						//Metemos este nodo en la lista para poder ser abierto
-						Open.Add(nodoAdy);
+                while (i < frontera.Count && !encontrado)
+                {
+                    if (frontera[i].GetPos() == nodoAdy.GetPos())
+                    {
+                        //Comprobamos si es mejor nodo el actual
+                        
+                        if (nodoAdy.GetF() < frontera[i].GetF() )
+                        {
+                            //Calculamos el coste estimado desde el nodo inicio hasta este nodo
+                            nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy, nodoAux.GetPos()) + (int)_world[nodoAdy.GetPos().GetY(), nodoAdy.GetPos().GetX()].GetTerreno());
 
-						//Marcamos este nodo como visitado
-						visitados[nodoAdy.GetValor()] = true;
+                            //Calculamos el coste estimado desde este nodo hasta el destino
+                            nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
 
-					
-					}
+                            frontera.RemoveAt(i);
+                            frontera.Add(nodoAdy);
 
-				}
-
-				//Recordamos que esta ruta no tiene más opciones que probar
-				Closed.Add(nodoAux);
+                        }
+                        encontrado = true;
+                    }
+                    i++;
+                } 
 
 			}
-
+			
 		}//Iteramos hasta que la lista Open sea empty
 
-		//Tenemos el resultado en la lista result
-		_camino = result;
+
+
     }
 
     //Empty si no hay camino posible
-	public List<Pos> GetCamino()
+	public Stack<Pos> GetCamino()
     {
         return _camino;
     }
@@ -222,7 +232,7 @@ public class AEstrella
     Pos _posIni;
     Pos _posFin;
 
-	List <Pos> _camino;
+    Stack<Pos> _camino;
 
     //Todo superior a este número esta bloqueado
     const int maxWalkableTileNum = 1;
