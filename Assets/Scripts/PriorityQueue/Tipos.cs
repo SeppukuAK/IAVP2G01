@@ -35,6 +35,11 @@ public class Pos
 	{
 		return (a.GetX () != b.GetX () || a.GetY () != b.GetY ());
 	}
+
+	public override string ToString ()
+	{
+		return string.Format (_x.ToString() + ":" + _y.ToString());
+	}
 }
 
 public enum ColorUnidad { rojo, azul, verde, ninguno };

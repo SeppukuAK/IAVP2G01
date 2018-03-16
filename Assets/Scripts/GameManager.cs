@@ -1,11 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
 
+
+	public Text textoReloj;
     public const int Ancho = 10;
     public const int Alto = 10;
     public const int WorldSize = 100;
@@ -43,7 +47,6 @@ public class GameManager : MonoBehaviour
 	GameObject _barcoSeleccionado;
 
 
-
     // Use this for initialization
     void Start()
     {
@@ -62,7 +65,7 @@ public class GameManager : MonoBehaviour
     {
 
     }
-
+		
     //---------------CONSTRUCCIÓN TILES------------------------
 
     //Pasa la representación lógica del tablero (matriz) a la representación física (gameobjects)
@@ -188,5 +191,7 @@ public class GameManager : MonoBehaviour
 		_barcoSeleccionado.GetComponent<Barco> ().SetSpriteDeseleccionado ();
 		SetSeleccionado(ColorUnidad.ninguno, null);
 	}
-
+	public void escribeTiempo(string texto){
+		textoReloj.text = "Tiempo: " + texto + "ms";
+	}
 }

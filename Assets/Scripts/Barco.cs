@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System.Diagnostics;
+
 
 
 public class Barco : MonoBehaviour {
@@ -11,11 +13,17 @@ public class Barco : MonoBehaviour {
     Sprite _spriteBarco;
     Sprite _spriteBarcoSeleccionado;
 
+
 	GameObject _flecha;
+
+	Stopwatch _reloj;
+	AEstrella A;
 
     // Use this for initialization
     void Start()
     {
+		_flecha.SetActive (false);
+		_reloj = new Stopwatch ();
     }
 
 	public void ConstruyeBarco(LogicaBarco logicaBarco, Sprite spriteBarco, Sprite spriteBarcoSeleccionado,GameObject flecha)
@@ -30,7 +38,7 @@ public class Barco : MonoBehaviour {
 
     private void OnMouseDown()
     {
-        if (GameManager.instance.GetSeleccionado() == ColorUnidad.ninguno)
+		if (GameManager.instance.GetSeleccionado() == ColorUnidad.ninguno && _logicaBarco.GetFlecha() == _logicaBarco.GetPos())
         {
             SpriteRenderer render = GetComponent<SpriteRenderer>();
             render.sprite = _spriteBarcoSeleccionado;
@@ -57,42 +65,64 @@ public class Barco : MonoBehaviour {
 
 		_flecha.transform.position = new Vector3(pos.GetX() * GameManager.Distancia, -pos.GetY() * GameManager.Distancia, 0);
 
+		_flecha.SetActive (true);
+
 		GameManager.instance.SetSeleccionado(ColorUnidad.ninguno, null);
 
 		SetSpriteDeseleccionado ();
 
+		_reloj.Reset ();
+
+		_reloj.Start ();
+
+
+
 		AEstrella A = new AEstrella (GameManager.instance.GetLogicaTablero().GetMatriz(), _logicaBarco.GetPos(), pos);
 
+
+		_reloj.Stop ();
+		GameManager.instance.escribeTiempo (_reloj.ElapsedMilliseconds.ToString());
+
 		MueveBarco (A.GetCamino ());
+
+
 	}
+
+
 
     public void MueveBarco(Stack<Pos> camino)
     {
-		StartCoroutine ("AvanzaUnPaso", camino);
+		if (camino != null)
+			StartCoroutine ("AvanzaUnPaso", camino);
+		else
+			QuitaFlecha ();
     }
 
 	IEnumerator AvanzaUnPaso(Stack<Pos> camino)
 	{
-        Pos newPos = camino.Pop();
-
-        _logicaBarco.SetPos (newPos);
-
-		this.gameObject.transform.position = new Vector3 (newPos.GetX ()*GameManager.Distancia , -newPos.GetY ()*GameManager.Distancia, 0);
-
-        if (camino.Count > 0)
-        {
-            if (GameManager.instance.GetLogicaTablero().GetLogicaTile(newPos).GetTerreno() == Terreno.agua)
-				yield return new WaitForSeconds (5.2f);
-			else
-				yield return new WaitForSeconds (5.4f);
-			
-			MueveBarco (camino);
-		}
-		else 
+		while (camino.Count > 0 && GameManager.instance.GetLogicaTablero().GetLogicaTile(camino.First()).GetTerreno() != Terreno.muro)
 		{
-			_logicaBarco.SetFlecha (newPos);
-			_flecha.transform.position = new Vector3(newPos.GetX() * GameManager.Distancia, -newPos.GetY() * GameManager.Distancia, 0);
+			Pos newPos = camino.Pop ();
+
+			_logicaBarco.SetPos (newPos);
+
+			this.gameObject.transform.position = new Vector3 (newPos.GetX () * GameManager.Distancia, -newPos.GetY () * GameManager.Distancia, 0);
+
+			if (GameManager.instance.GetLogicaTablero ().GetLogicaTile (newPos).GetTerreno () == Terreno.agua)
+				yield return new WaitForSeconds (0.2f);
+			else
+				yield return new WaitForSeconds (0.4f);
+			
 		}
+			
+		QuitaFlecha ();
+
 	}
 
+	void QuitaFlecha()
+	{
+		_logicaBarco.SetFlecha (_logicaBarco.GetPos());
+		_flecha.SetActive (false);
+		_flecha.transform.position = new Vector3(_logicaBarco.GetPos().GetX() * GameManager.Distancia, -_logicaBarco.GetPos().GetY() * GameManager.Distancia, 0);
+	}
 }

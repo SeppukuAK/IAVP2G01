@@ -7,7 +7,6 @@ using System.Text;
 using Priority_Queue;
 
 
-
 public class Nodo
 {
     private Nodo _padre;
@@ -16,15 +15,11 @@ public class Nodo
 
     private int _f; //Coste desde el inicio a este nodo
     private int _g; //Coste desde este nodo al nodo objetivo
-    
-    //Indice de este nodo en el array de mundo
-    private int _valor;
 
     public Nodo(Nodo padre, Pos pos)
     {
         _padre = padre;
         _pos = pos;
-        _valor = pos.GetX() + pos.GetY() * GameManager.Ancho;
         _f = _g = 0;
     }
 
@@ -56,10 +51,6 @@ public class Nodo
 	public void SetG(int g)
 	{
 		_g = g;
-	}
-	public int GetValor()
-	{
-		return _valor;
 	}
 }
 
@@ -142,9 +133,10 @@ public class AEstrella
         //Contiene todas las casillas visitadas del tablero
         Hashtable visitados = new Hashtable();
 
-
 		while (true)
 		{
+			//UnityEngine.Debug.Log (frontera.Count ());
+
             if (frontera.Count() <= 0)
                 return null;
 
@@ -169,7 +161,7 @@ public class AEstrella
             frontera.Remove(nodoAux);
 
             //Comprobamos si este nodo es el destino
-            if (nodoAux.GetValor() == nodoFin.GetValor())
+			if (nodoAux.GetPos() == nodoFin.GetPos())
             {
                 Stack<Pos> stack = new Stack<Pos>();
 
@@ -182,8 +174,8 @@ public class AEstrella
             }
 
             //Lo añadimos a visitados
-            if (!visitados.Contains((nodoAux.GetPos().GetHashCode())))
-                visitados.Add(nodoAux.GetPos().GetHashCode(),null); //Clave,valor
+			if (!visitados.Contains((nodoAux.GetPos().ToString())))
+				visitados.Add(nodoAux.GetPos().ToString(),null); //Clave,valor
 
 			//No es el nodo resultado, hay que expandir
 			Queue <Pos> adyacentes = Neighbours(nodoAux.GetPos());
@@ -195,44 +187,45 @@ public class AEstrella
 				Nodo nodoAdy = new Nodo (nodoAux, posAdy );
 
                 //Si nunca ha sido encontrado
-                if (!visitados.Contains(nodoAdy.GetPos()) && !frontera.Contains(nodoAdy))
-                {
-                    //Calculamos el coste estimado desde el nodo inicio hasta este nodo
-                    nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy, nodoAux.GetPos()) + (int)_world[nodoAdy.GetPos().GetY(), nodoAdy.GetPos().GetX()].GetTerreno());
+				if (!visitados.Contains (nodoAdy.GetPos().ToString()) && !frontera.Contains (nodoAdy)) {
+					//Calculamos el coste estimado desde el nodo inicio hasta este nodo
+					nodoAdy.SetG (nodoAux.GetG () + ManhattanDistance (posAdy, nodoAux.GetPos ()) + (int)_world [nodoAdy.GetPos ().GetY (), nodoAdy.GetPos ().GetX ()].GetTerreno ());
 
-                    //Calculamos el coste estimado desde este nodo hasta el destino
-                    nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
+					//Calculamos el coste estimado desde este nodo hasta el destino
+					nodoAdy.SetF (nodoAdy.GetG () + ManhattanDistance (posAdy, nodoFin.GetPos ()));
 
-                    //Metemos este nodo en la lista 
-                    frontera.Add(nodoAdy);
-                }
+					//Metemos este nodo en la lista 
+					frontera.Add (nodoAdy);
+				}
 
-                bool encontrado = false;
-                int i = 0;
+				else 
+				{
+					bool encontrado = false;
+					int i = 0;
 
-                while (i < frontera.Count && !encontrado)
-                {
-                    if (frontera[i].GetPos() == nodoAdy.GetPos())
-                    {
-                        //Comprobamos si es mejor nodo el actual                      
-                        if (nodoAdy.GetF() < frontera[i].GetF() )
-                        {
-                            //Calculamos el coste estimado desde el nodo inicio hasta este nodo
-                            nodoAdy.SetG(nodoAux.GetG() + ManhattanDistance(posAdy, nodoAux.GetPos()) + (int)_world[nodoAdy.GetPos().GetY(), nodoAdy.GetPos().GetX()].GetTerreno());
+					while (i < frontera.Count && !encontrado)
+					{
+						if (frontera [i].GetPos () == nodoAdy.GetPos ()) {
+							//Comprobamos si es mejor nodo el actual                      
+							if (nodoAdy.GetF () < frontera [i].GetF ()) {
+								//Calculamos el coste estimado desde el nodo inicio hasta este nodo
+								nodoAdy.SetG (nodoAux.GetG () + ManhattanDistance (posAdy, nodoAux.GetPos ()) + (int)_world [nodoAdy.GetPos ().GetY (), nodoAdy.GetPos ().GetX ()].GetTerreno ());
 
-                            //Calculamos el coste estimado desde este nodo hasta el destino
-                            nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
+								//Calculamos el coste estimado desde este nodo hasta el destino
+								nodoAdy.SetF (nodoAdy.GetG () + ManhattanDistance (posAdy, nodoFin.GetPos ()));
 
-                            //Sustitumos el nodo actual por el que estaba en la lista, ya que el coste es menor
-                            frontera.RemoveAt(i);
-                            frontera.Add(nodoAdy);
+								//Sustitumos el nodo actual por el que estaba en la lista, ya que el coste es menor
 
-                        }
-                        encontrado = true;
-                    }
-                    i++;
-                } 
+								frontera.RemoveAt (i);
 
+								frontera.Add (nodoAdy);
+
+							}
+							encontrado = true;
+						}
+						i++;
+					} 
+				}
 			}
 			
 		}
