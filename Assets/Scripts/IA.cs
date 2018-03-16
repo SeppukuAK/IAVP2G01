@@ -28,6 +28,7 @@ public class Nodo
         _f = _g = 0;
     }
 
+    //---------------------------- GETTERS ----------------------------------------------
     public Nodo getPadre()
     {
         return _padre;
@@ -47,7 +48,8 @@ public class Nodo
 		return _g;
 	}
 
-	public void SetF(int f)
+    //---------------------------- SETTERS ----------------------------------------------
+    public void SetF(int f)
 	{
 		_f = f;
 	}
@@ -63,6 +65,23 @@ public class Nodo
 
 public class AEstrella
 {
+    //Atributos
+
+    //Empty si no hay camino posible
+    public Stack<Pos> GetCamino()
+    {
+        return _camino;
+    }
+
+    LogicaTile[,] _world;
+    Pos _posIni;
+    Pos _posFin;
+
+    Stack<Pos> _camino;
+
+    //Máximo número de tiles por los que se puede mover el barco. Si es mayor que este número esta bloqueado
+    const int maxWalkableTileNum = 1;
+
 
     public AEstrella(LogicaTile[,] world, Pos inicio, Pos fin)
     {
@@ -101,12 +120,13 @@ public class AEstrella
         return adyacentes;
     }
 
+    //Comprueba si el barco se puede mover a una posición determinada
     bool CanWalkHere(int x, int y)
     {
         return ((int)_world[y, x].GetTerreno() <= maxWalkableTileNum);
     }
 
-    //Hace al A*
+    //Implementa el algoritmo A*
     Stack<Pos> CalculatePath()
     {
         Nodo nodoIni = new Nodo(null, _posIni);
@@ -115,15 +135,14 @@ public class AEstrella
         //Calculamos el coste estimado desde este nodo hasta el destino
         nodoIni.SetF(ManhattanDistance(nodoIni.GetPos(), nodoFin.GetPos()));
 
-        //Lista de nodos actualmente abiertos
-
+        //Creamos la lista de nodos
         List <Nodo> frontera = new List<Nodo>();
         frontera.Add(nodoIni);
 
-        //Contiene todas las casillas del tablero. Si true esta visitado
+        //Contiene todas las casillas visitadas del tablero
         Hashtable visitados = new Hashtable();
 
-		//Operamos hasta que en la lista de abiertos no quede ninguno
+
 		while (true)
 		{
             if (frontera.Count() <= 0)
@@ -135,6 +154,7 @@ public class AEstrella
 
             for (int i = 0; i < frontera.Count; i++)
             {
+                //Encontramos el nodo de coste menor
                 if (frontera[i].GetF() < max)
                 {
                     max = frontera[i].GetF();
@@ -144,29 +164,28 @@ public class AEstrella
 
             }
 
-            //Cogemos el siguiente nodo y lo quitamos de la lista de abiertos
+            //Cogemos el siguiente nodo y lo quitamos de la lista
             Nodo nodoAux = frontera.ElementAt(min);
             frontera.Remove(nodoAux);
 
             //Comprobamos si este nodo es el destino
             if (nodoAux.GetValor() == nodoFin.GetValor())
             {
-                Stack<Pos> queue = new Stack<Pos>();
+                Stack<Pos> stack = new Stack<Pos>();
 
                 while (nodoAux != null)
                 {
-                    queue.Push(nodoAux.GetPos());
+                    stack.Push(nodoAux.GetPos());
                     nodoAux = nodoAux.getPadre();
                 }
-                return queue;
+                return stack;
             }
 
-            //La añadimos a visitados
+            //Lo añadimos a visitados
             if (!visitados.Contains((nodoAux.GetPos().GetHashCode())))
                 visitados.Add(nodoAux.GetPos().GetHashCode(),null); //Clave,valor
 
 			//No es el nodo resultado, hay que expandir
-			//Encontramos todos los nodos alcanzables
 			Queue <Pos> adyacentes = Neighbours(nodoAux.GetPos());
 
 			//Comprobamos todos los adyacentes alcanzables
@@ -184,7 +203,7 @@ public class AEstrella
                     //Calculamos el coste estimado desde este nodo hasta el destino
                     nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
 
-                    //Metemos este nodo en la lista para poder ser abierto
+                    //Metemos este nodo en la lista 
                     frontera.Add(nodoAdy);
                 }
 
@@ -195,8 +214,7 @@ public class AEstrella
                 {
                     if (frontera[i].GetPos() == nodoAdy.GetPos())
                     {
-                        //Comprobamos si es mejor nodo el actual
-                        
+                        //Comprobamos si es mejor nodo el actual                      
                         if (nodoAdy.GetF() < frontera[i].GetF() )
                         {
                             //Calculamos el coste estimado desde el nodo inicio hasta este nodo
@@ -205,6 +223,7 @@ public class AEstrella
                             //Calculamos el coste estimado desde este nodo hasta el destino
                             nodoAdy.SetF(nodoAdy.GetG() + ManhattanDistance(posAdy, nodoFin.GetPos()));
 
+                            //Sustitumos el nodo actual por el que estaba en la lista, ya que el coste es menor
                             frontera.RemoveAt(i);
                             frontera.Add(nodoAdy);
 
@@ -216,28 +235,9 @@ public class AEstrella
 
 			}
 			
-		}//Iteramos hasta que la lista Open sea empty
-
-
+		}
 
     }
-
-    //Empty si no hay camino posible
-	public Stack<Pos> GetCamino()
-    {
-        return _camino;
-    }
-
-    LogicaTile[,] _world;
-    Pos _posIni;
-    Pos _posFin;
-
-    Stack<Pos> _camino;
-
-    //Todo superior a este número esta bloqueado
-    const int maxWalkableTileNum = 1;
-
-
 }
 
 

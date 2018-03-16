@@ -82,9 +82,9 @@ public class Barco : MonoBehaviour {
         if (camino.Count > 0)
         {
             if (GameManager.instance.GetLogicaTablero().GetLogicaTile(newPos).GetTerreno() == Terreno.agua)
-				yield return new WaitForSeconds (0.2f);
+				yield return new WaitForSeconds (5.2f);
 			else
-				yield return new WaitForSeconds (0.4f);
+				yield return new WaitForSeconds (5.4f);
 			
 			MueveBarco (camino);
 		}
